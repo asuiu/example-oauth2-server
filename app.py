@@ -1,13 +1,13 @@
 # coding: utf-8
-
+import json
+import random
 from datetime import datetime, timedelta
-from flask import Flask
+from flask import Flask, Response
 from flask import session, request
 from flask import render_template, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import gen_salt
 from flask_oauthlib.provider import OAuth2Provider
-
 
 app = Flask(__name__, template_folder='templates')
 app.debug = True
@@ -144,14 +144,15 @@ def client():
     if not user:
         return redirect('/')
     item = Client(
-        client_id=gen_salt(40),
-        client_secret=gen_salt(50),
+        client_id='bob',  # gen_salt(40),
+        client_secret="WaPwJhgJD2pEsNZ50VHfhRwe0p8tdlsM6YkgwAa1P60QnzOyPo",  # gen_salt(50),
         _redirect_uris=' '.join([
             'http://localhost:8000/authorized',
             'http://127.0.0.1:8000/authorized',
             'http://127.0.1:8000/authorized',
             'http://127.1:8000/authorized',
-            ]),
+            'https://zapier.com/dashboard/auth/oauth/return/App43044API/'
+        ]),
         _default_scopes='email',
         user_id=user.id,
     )
@@ -255,6 +256,34 @@ def me():
     return jsonify(username=user.username)
 
 
+@app.route('/resources')
+@oauth.require_oauth()
+def resources():
+    user = request.oauth.user
+    return jsonify(username=user.username)
+
+
+@app.route('/trigger1')
+@oauth.require_oauth()
+def trigger1():
+    user = request.oauth.user
+    json_data = [dict(data=user.username + str(random.randint(0, 10000)),
+                      trigger_field_key="field_key" + str(random.randint(0, 1000)))]
+    #data = json.dumps(json_data)
+    #resp = Response(response=data, status=200, mimetype="application/json")
+
+    return jsonify(results = json_data)
+    return resp
+
+
+@app.route('/action1', methods=['POST'])
+@oauth.require_oauth()
+def action1():
+    user = request.oauth.user
+    return jsonify(data=user.username + str(random.randint(0, 10000)))
+
+
 if __name__ == '__main__':
     db.create_all()
-    app.run()
+    app.run(port=443,
+            debug=True, ssl_context='adhoc')

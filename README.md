@@ -1,4 +1,4 @@
-# Example for OAuth 2 Server
+# Just a PoC for OAuth2 authentication integration with Zapier.com
 
 This is an example of OAuth 2 Server.
 
