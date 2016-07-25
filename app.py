@@ -1,13 +1,15 @@
 # coding: utf-8
 import json
+import logging
 import random
+import time
 from datetime import datetime, timedelta
+
 from flask import Flask, Response
-from flask import session, request
 from flask import render_template, redirect, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import gen_salt
+from flask import session, request
 from flask_oauthlib.provider import OAuth2Provider
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, template_folder='templates')
 app.debug = True
@@ -151,7 +153,8 @@ def client():
             'http://127.0.0.1:8000/authorized',
             'http://127.0.1:8000/authorized',
             'http://127.1:8000/authorized',
-            'https://zapier.com/dashboard/auth/oauth/return/App43044API/'
+            'https://zapier.com/dashboard/auth/oauth/return/App43044API/',
+            'https://zapier.com/dashboard/auth/oauth/return/App43232API/'
         ]),
         _default_scopes='email',
         user_id=user.id,
@@ -256,34 +259,78 @@ def me():
     return jsonify(username=user.username)
 
 
-@app.route('/resources')
-@oauth.require_oauth()
-def resources():
-    user = request.oauth.user
-    return jsonify(username=user.username)
-
-
 @app.route('/trigger1')
-@oauth.require_oauth()
+#@oauth.require_oauth()
 def trigger1():
-    user = request.oauth.user
-    json_data = [dict(data=user.username + str(random.randint(0, 10000)),
-                      trigger_field_key="field_key" + str(random.randint(0, 1000)))]
-    #data = json.dumps(json_data)
-    #resp = Response(response=data, status=200, mimetype="application/json")
+    # user = request.oauth.user
+    # json_data = [dict(data=user.username + str(random.randint(0, 10000)),
+    #                    trigger_field_key="field_key" + str(random.randint(0, 1000)))]
+    user = "not_authenticated"
+    json_data = [dict(id=random.randint(0, 1000), data=user + str(random.randint(0, 10000)))]
 
-    return jsonify(results = json_data)
+    # data = json.dumps(json_data)
+    # resp = Response(response=data, status=200, mimetype="application/json")
+    return jsonify(results=json_data)
+
+
+PROCESS_IDS = {1234: {}}
+
+
+@app.route('/profiles/<int:id>/eventNotifications', methods=['PATCH'])
+#@oauth.require_oauth()
+def patch_eventNotifications(id):
+    processId = request.args.get('processId')
+    PROCESS_IDS[id][processId] = time.time()
+    data = json.dumps({})
+    resp = Response(response=data, status=200, mimetype="application/json")
+    resp.headers['Location'] = '/profiles/<int:id>/eventNotifications?processId=%s&page=1' % processId
+    return resp
+
+
+@app.route('/profiles/<int:id>/eventNotifications', methods=['GET'])
+#@oauth.require_oauth()
+def get_eventNotifications(id):
+    processId = request.args.get('processId')
+    page = int(request.args.get('page'))
+    # if processId not in PROCESS_IDS[id]:
+    #     resp = Response(response="processId for ID: %d doesn't exist"%id, status=404)
+    #     return resp
+    data = json.dumps([{"id": random.randint(0, 1000), "data": random.randint(0, 1000)},
+                       {"id": page, "data": random.randint(0, 1000)}])
+    resp = Response(response=data, status=200, mimetype="application/json")
+    resp.headers['Location'] = '/profiles/<int:id>/eventNotifications?processId=%s&page=1&page' % processId
+    return resp
+
+
+@app.route('/profiles/<int:id>/eventNotifications', methods=['DELETE'])
+#@oauth.require_oauth()
+def delete_eventNotifications(id):
+    processId = request.args.get('processId')
+    if processId not in PROCESS_IDS[id]:
+        resp = Response(response="processId doesn't exist", status=404)
+        return resp
+    del PROCESS_IDS[id][processId]
+    data = json.dumps({"deleted": processId})
+    resp = Response(response=data, status=200, mimetype="application/json")
+    resp.headers['Location'] = '/profiles/<int:id>/eventNotifications?processId=%s&page=1&page' % processId
     return resp
 
 
 @app.route('/action1', methods=['POST'])
-@oauth.require_oauth()
+#@oauth.require_oauth()
 def action1():
-    user = request.oauth.user
-    return jsonify(data=user.username + str(random.randint(0, 10000)))
+    # user = request.oauth.user
+    # return jsonify(data=user.username + str(random.randint(0, 10000)))
+    print "Action1 got: ", request.json
+    return jsonify(data=str(random.randint(0, 10000)))
 
+
+from flask_oauthlib.provider.oauth2 import log as oauth_log
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(port=443,
-            debug=True, ssl_context='adhoc')
+    # oauth_log = logging.getLogger('flask_oauthlib')
+    oauth_log.setLevel(logging.DEBUG)
+    app.logger.setLevel(logging.DEBUG)
+    app.run(port=80, debug=True)
+    # app.run(port=443, debug=True, ssl_context='adhoc')
