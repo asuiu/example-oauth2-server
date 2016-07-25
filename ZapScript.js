@@ -10,7 +10,7 @@ var Zap = {
         }
 
         var processId = guid();
-        var domain = 'http://212.47.247.218';
+        var domain = 'https://212.47.247.218';
         var myParams = bundle.auth_fields;
         myParams.processId = processId;
         var patch_request = {

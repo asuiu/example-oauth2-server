@@ -154,7 +154,8 @@ def client():
             'http://127.0.1:8000/authorized',
             'http://127.1:8000/authorized',
             'https://zapier.com/dashboard/auth/oauth/return/App43044API/',
-            'https://zapier.com/dashboard/auth/oauth/return/App43232API/'
+            'https://zapier.com/dashboard/auth/oauth/return/App43232API/',
+            'https://zapier.com/dashboard/auth/oauth/return/App43424API/'
         ]),
         _default_scopes='email',
         user_id=user.id,
@@ -260,7 +261,7 @@ def me():
 
 
 @app.route('/trigger1')
-#@oauth.require_oauth()
+@oauth.require_oauth()
 def trigger1():
     # user = request.oauth.user
     # json_data = [dict(data=user.username + str(random.randint(0, 10000)),
@@ -277,7 +278,7 @@ PROCESS_IDS = {1234: {}}
 
 
 @app.route('/profiles/<int:id>/eventNotifications', methods=['PATCH'])
-#@oauth.require_oauth()
+@oauth.require_oauth()
 def patch_eventNotifications(id):
     processId = request.args.get('processId')
     PROCESS_IDS[id][processId] = time.time()
@@ -288,7 +289,7 @@ def patch_eventNotifications(id):
 
 
 @app.route('/profiles/<int:id>/eventNotifications', methods=['GET'])
-#@oauth.require_oauth()
+@oauth.require_oauth()
 def get_eventNotifications(id):
     processId = request.args.get('processId')
     page = int(request.args.get('page'))
@@ -303,7 +304,7 @@ def get_eventNotifications(id):
 
 
 @app.route('/profiles/<int:id>/eventNotifications', methods=['DELETE'])
-#@oauth.require_oauth()
+@oauth.require_oauth()
 def delete_eventNotifications(id):
     processId = request.args.get('processId')
     if processId not in PROCESS_IDS[id]:
@@ -317,7 +318,7 @@ def delete_eventNotifications(id):
 
 
 @app.route('/action1', methods=['POST'])
-#@oauth.require_oauth()
+@oauth.require_oauth()
 def action1():
     # user = request.oauth.user
     # return jsonify(data=user.username + str(random.randint(0, 10000)))
@@ -332,5 +333,5 @@ if __name__ == '__main__':
     # oauth_log = logging.getLogger('flask_oauthlib')
     oauth_log.setLevel(logging.DEBUG)
     app.logger.setLevel(logging.DEBUG)
-    app.run(port=80, debug=True)
-    # app.run(port=443, debug=True, ssl_context='adhoc')
+    # app.run(port=80, debug=True)
+    app.run(port=443, debug=True, ssl_context='adhoc')
