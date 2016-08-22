@@ -254,31 +254,61 @@ def authorize(*args, **kwargs):
 
 
 @app.route('/api/me')
-@oauth.require_oauth()
+# @oauth.require_oauth()
 def me():
     user = request.oauth.user
     return jsonify(username=user.username)
 
+class AutoIncrementedId:
+    def __init__(self):
+        self.__i = 0
+    def __call__(self, *args, **kwargs):
+        self.__i += 1
+        return self.__i
+globalCounter = AutoIncrementedId()
 
 @app.route('/trigger1')
-@oauth.require_oauth()
+# @oauth.require_oauth()
 def trigger1():
     # user = request.oauth.user
     # json_data = [dict(data=user.username + str(random.randint(0, 10000)),
     #                    trigger_field_key="field_key" + str(random.randint(0, 1000)))]
     user = "not_authenticated"
-    json_data = [dict(id=random.randint(0, 1000), data=user + str(random.randint(0, 10000)))]
+    json_data = [dict(id=random.randint(0, 1000), data=user + str(globalCounter()))]
 
     # data = json.dumps(json_data)
     # resp = Response(response=data, status=200, mimetype="application/json")
+    print "Trigger1 sends: ",json_data
     return jsonify(results=json_data)
+
+@app.route('/trigger2')
+# @oauth.require_oauth()
+def trigger2():
+    json_data = [dict(id=random.randint(0, 1000), data2="data2_"+str(globalCounter()), json2={"jsondata":"jsondata2_"+str(globalCounter())})]
+    print "Trigger2 sends: ", json_data
+    return jsonify(results=json_data)
+
+@app.route('/field1')
+# @oauth.require_oauth()
+def field1():
+    json_data = [dict(id=random.randint(0, 1000), fielddata="fielddata_"+str(globalCounter()))]
+    print "Field1 sends: ",json_data
+    return jsonify(results=json_data)
+
+@app.route('/action1', methods=['POST'])
+# @oauth.require_oauth()
+def action1():
+    # user = request.oauth.user
+    # return jsonify(data=user.username + str(random.randint(0, 10000)))
+    print "Action1 got: ", request.json
+    return jsonify(data=str(random.randint(0, 10000)))
 
 
 PROCESS_IDS = {1234: {}}
 
 
 @app.route('/profiles/<int:id>/eventNotifications', methods=['PATCH'])
-@oauth.require_oauth()
+# @oauth.require_oauth()
 def patch_eventNotifications(id):
     processId = request.args.get('processId')
     PROCESS_IDS[id][processId] = time.time()
@@ -289,7 +319,7 @@ def patch_eventNotifications(id):
 
 
 @app.route('/profiles/<int:id>/eventNotifications', methods=['GET'])
-@oauth.require_oauth()
+# @oauth.require_oauth()
 def get_eventNotifications(id):
     processId = request.args.get('processId')
     page = int(request.args.get('page'))
@@ -297,14 +327,16 @@ def get_eventNotifications(id):
     #     resp = Response(response="processId for ID: %d doesn't exist"%id, status=404)
     #     return resp
     data = json.dumps([{"id": random.randint(0, 1000), "data": random.randint(0, 1000)},
+                       {"id": random.randint(0,1000), "data": random.randint(0, 1000)},
                        {"id": page, "data": random.randint(0, 1000)}])
+    print "Sending %s to Action: "%data
     resp = Response(response=data, status=200, mimetype="application/json")
     resp.headers['Location'] = '/profiles/<int:id>/eventNotifications?processId=%s&page=1&page' % processId
     return resp
 
 
 @app.route('/profiles/<int:id>/eventNotifications', methods=['DELETE'])
-@oauth.require_oauth()
+# @oauth.require_oauth()
 def delete_eventNotifications(id):
     processId = request.args.get('processId')
     if processId not in PROCESS_IDS[id]:
@@ -317,15 +349,6 @@ def delete_eventNotifications(id):
     return resp
 
 
-@app.route('/action1', methods=['POST'])
-@oauth.require_oauth()
-def action1():
-    # user = request.oauth.user
-    # return jsonify(data=user.username + str(random.randint(0, 10000)))
-    print "Action1 got: ", request.json
-    return jsonify(data=str(random.randint(0, 10000)))
-
-
 from flask_oauthlib.provider.oauth2 import log as oauth_log
 
 if __name__ == '__main__':
@@ -333,5 +356,5 @@ if __name__ == '__main__':
     # oauth_log = logging.getLogger('flask_oauthlib')
     oauth_log.setLevel(logging.DEBUG)
     app.logger.setLevel(logging.DEBUG)
-    # app.run(port=80, debug=True)
-    app.run(port=443, debug=True, ssl_context='adhoc')
+    app.run(port=80, debug=True)
+    # app.run(port=443, debug=True, ssl_context='adhoc')
