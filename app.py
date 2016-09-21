@@ -372,6 +372,7 @@ def delete_eventNotifications(id):
     resp.headers['Location'] = '/profiles/<int:id>/eventNotifications?processId=%s&page=1&page' % processId
     return resp
 
+
 @app.route('/me')
 # @oauth.require_oauth()
 def pure360_me():
@@ -387,5 +388,5 @@ if __name__ == '__main__':
     # oauth_log = logging.getLogger('flask_oauthlib')
     oauth_log.setLevel(logging.DEBUG)
     app.logger.setLevel(logging.DEBUG)
-    app.run(port=80, debug=True)
+    app.run(port=80, debug=True, host='0.0.0.0')
     # app.run(port=443, debug=True, ssl_context='adhoc')
