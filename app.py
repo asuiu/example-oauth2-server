@@ -347,7 +347,7 @@ def patch_eventNotifications(id):
 def get_eventNotifications(id):
     type = request.args.get('type', '')
     if type.lower() == "OPTOUT":
-        data = json.dumps([{"id": random.randint(0, 1000), "optout_data": "data"+str(random.randint(0, 1000))}])
+        data = json.dumps([{"id": random.randint(0, 1000), "received_profile": str(id)}])
         print "Sending %s to Action: " % data
         resp = Response(response=data, status=200, mimetype="application/json")
         return resp
