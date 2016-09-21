@@ -345,6 +345,13 @@ def patch_eventNotifications(id):
 @app.route('/profiles/<int:id>/eventNotifications', methods=['GET'])
 # @oauth.require_oauth()
 def get_eventNotifications(id):
+    type = request.args.get('type', '')
+    if type.lower() == "OPTOUT":
+        data = json.dumps([{"id": random.randint(0, 1000), "optout_data": "data"+str(random.randint(0, 1000))}])
+        print "Sending %s to Action: " % data
+        resp = Response(response=data, status=200, mimetype="application/json")
+        return resp
+
     processId = request.args.get('processId')
     page = int(request.args.get('page'))
     # if processId not in PROCESS_IDS[id]:
