@@ -155,7 +155,8 @@ def client():
             'http://127.1:8000/authorized',
             'https://zapier.com/dashboard/auth/oauth/return/App43044API/',
             'https://zapier.com/dashboard/auth/oauth/return/App43232API/',
-            'https://zapier.com/dashboard/auth/oauth/return/App43424API/'
+            'https://zapier.com/dashboard/auth/oauth/return/App43424API/',
+            'https://zapier.com/dashboard/auth/oauth/return/App47055API/'
         ]),
         _default_scopes='email',
         user_id=user.id,
