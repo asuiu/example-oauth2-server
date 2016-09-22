@@ -389,6 +389,68 @@ def pure360_me():
     resp = Response(response=data, status=200, mimetype="application/json")
     return resp
 
+@app.route('/profiles/<int:id>/lists', methods=['GET'])
+@oauth.require_oauth()
+def get_lists(id):
+    def create_list_mock(id, profileId):
+        return {
+        "id":str(id),
+        "profileId":str(profileId),
+        "link":{
+          "rel":"self",
+          "href":"https://v1.api.pure360.com/lists/"+str(id)
+        },
+        "name":"testestset",
+        "language":"en_GB.UTF-8",
+        "count":28,
+        "draft":False,
+        "fields":[
+        ],
+        "amended":{
+          "when":"2016-09-22T14:19:26Z",
+          "by":"system"
+        },
+        "mailTo":"",
+        "filters":[
+        ],
+        "status":{
+          "pendingAutomation":False,
+          "pendingCampaign":False,
+          "lastUploadStatus":"COMPLETED"
+        },
+        "settings":{
+          "PISync":False
+        }
+      }
+    lists = [create_list_mock(1001,id),create_list_mock(1002, id),create_list_mock(1003, id)]
+    l ={"collection":{
+    "pageinfo":{
+      "total":1,
+      "page":1,
+      "pageSize":5
+    },
+    "links":[
+    ],
+    "items":lists
+    }}
+    data = json.dumps(l)
+    resp = Response(response=data, status=200, mimetype="application/json")
+    return resp
+
+@app.route('/contacts', methods=['POST'])
+@oauth.require_oauth()
+def add_contact():
+    json_data = request.get_json()
+    if json_data is None:
+        print "POST /contacts  got an invalid JSON: %s"%str(request.data)
+    print "POST /contacts received next data: %s"%json.dumps(json_data)
+    profileId = json_data.get('profileId')
+    email = json_data.get('email')
+    lists = json_data.get('lists')
+    fields = json_data.get('fields')
+    data = json.dumps([])
+    resp = Response(response=data, status=200, mimetype="application/json")
+    return resp
 
 
 from flask_oauthlib.provider.oauth2 import log as oauth_log
