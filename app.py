@@ -254,7 +254,7 @@ def authorize(*args, **kwargs):
 
 
 @app.route('/api/me')
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def me():
     user = request.oauth.user
     return jsonify(username=user.username)
@@ -273,7 +273,7 @@ globalCounter = AutoIncrementedId()
 
 
 @app.route('/trigger1')
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def trigger1():
     # user = request.oauth.user
     # json_data = [dict(data=user.username + str(random.randint(0, 10000)),
@@ -288,7 +288,7 @@ def trigger1():
 
 
 @app.route('/trigger2')
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def trigger2():
     json_data = [dict(id=random.randint(0, 1000), data2="data2_" + str(globalCounter()),
                       json2={"jsondata": "jsondata2_" + str(globalCounter())})]
@@ -297,7 +297,7 @@ def trigger2():
 
 
 @app.route('/profiles')
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def profiles():
     # user = request.oauth.user
     # json_data = [dict(data=user.username + str(random.randint(0, 10000)),
@@ -312,7 +312,7 @@ def profiles():
 
 
 @app.route('/field1')
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def field1():
     json_data = [dict(id=random.randint(0, 1000), fielddata="fielddata_" + str(globalCounter()))]
     print "Field1 sends: ", json_data
@@ -320,7 +320,7 @@ def field1():
 
 
 @app.route('/action1', methods=['POST'])
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def action1():
     # user = request.oauth.user
     # return jsonify(data=user.username + str(random.randint(0, 10000)))
@@ -332,7 +332,7 @@ PROCESS_IDS = {1234: {}}
 
 
 @app.route('/profiles/<int:id>/eventNotifications', methods=['PATCH'])
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def patch_eventNotifications(id):
     processId = request.args.get('processId')
     PROCESS_IDS[id][processId] = time.time()
@@ -343,7 +343,7 @@ def patch_eventNotifications(id):
 
 
 @app.route('/profiles/<int:id>/eventNotifications', methods=['GET'])
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def get_eventNotifications(id):
     type = request.args.get('type', '')
     if type.lower() == "OPTOUT":
@@ -367,7 +367,7 @@ def get_eventNotifications(id):
 
 
 @app.route('/profiles/<int:id>/eventNotifications', methods=['DELETE'])
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def delete_eventNotifications(id):
     processId = request.args.get('processId')
     if processId not in PROCESS_IDS[id]:
@@ -381,7 +381,7 @@ def delete_eventNotifications(id):
 
 
 @app.route('/me')
-# @oauth.require_oauth()
+@oauth.require_oauth()
 def pure360_me():
     data = '''{"id":"12917","login":"jakubsikoratest","impersonating":false,"group":{"id":"11622","self":"/groups/11622"},"email":"jakub.sikora@pure360.com","name":"Jakub Sikora","phone":"01234567890","lastLogin":"2016-09-20T09:40:08Z","lastItemAccess":"2014-04-24T16:19:00Z","lastRole":{"roleType":"profile","profile":{"id":"13759"}},"licenceAcceptance":true,"blankTemplateAcceptedDate":null,"active":true,"profiles":[{"id":"13759","self":"/profiles/13759","title":"jakub.sikora"},{"id":"14016","self":"/profiles/14016","title":"cosworth"}],"views":[{"type":"profile","id":"13759","permissions":["allowLimitReceipt","POST:/feedback","POST:/help","GET:/components/$","GET:/emails/$","GET:/emails/$/bodies","GET:/emails/$/bodies/$","GET:/emails/$/bodies/$/$","GET:/profiles/$/components","GET:/profiles/$/customFields","GET:/profiles/$/emails","GET:/profiles/$/messages","GET:/profiles/$/templates","POST:/emails/$/test","POST:/components","POST:/emails","POST:/emails/$/bodies","POST:/emails/$/spamCheck","PUT:/components/$","PUT:/emails/$","PUT:/emails/$/bodies/$","PUT:/emails/$/bodies/$/$","PATCH:/components/$","PATCH:/emails/$","PATCH:/emails/$/bodies/$","DELETE:/components/$","DELETE:/emails/$","DELETE:/emails/$/bodies/$","DELETE:/snippets/$","GET:/profiles/$/snippets","GET:/snippets/$","GET:/systemSnippets","GET:/systemSnippets/$","POST:/snippets","PUT:/snippets/$","GET:/profiles/$/contacts","GET:/contacts/export","GET:/contacts/$","GET:/profiles/$/lists","GET:/profiles/$/listsUserNames","GET:/lists/$","GET:/lists/$/export","GET:/lists/$/filters/$","GET:/lists/$/filters/$/export","GET:/profiles/$/searches","GET:/searches/$","GET:/lists/$/fields","GET:/lists/$/contacts","POST:/contacts","POST:/lists","POST:/lists/$/data","POST:/lists/$/filters","POST:/profiles/$/listUploads","GET:/profiles/$/listUploads/$","PATCH:/contacts/$","PATCH:/lists/$","PUT:/lists/$/filters/$","PATCH:/lists/$/clean","PATCH:/lists/$/data","DELETE:/lists/$","DELETE:/lists/$/filters/$","DELETE:/lists/$/contacts/$","createListFromReport","GET:/profiles/$/campaigns","GET:/campaigns/$","GET:/campaigns/$/resends/$","POST:/campaigns","GET:/profiles/$/credits","POST:/campaigns/$/resends","PUT:/campaigns/$","PATCH:/campaigns/$","PATCH:/campaigns/$/resends/$","PUT:/campaigns/$/resends/$","GET:/geolocation/countries","GET:/geolocation/locations","GET:/profiles/$/reports","GET:/reports/$","GET:/reports/$/contacts","GET:/reports/$/exportSummary","GET:/reports/$/resends/$","GET:/reports/$/sentEmails/$","GET:/reports/$/sentEmails/$/bodies/$/$","GET:/reports/$/trackingBreakdown","GET:/reports/$/trackingBreakdownByDomain","GET:/reports/campaigns/$","GET:/reports/campaigns/$/analytics/profiles","GET:/reports/campaigns/$/analytics/profiles/$/metrics","GET:/reports/campaigns/$/clicks","GET:/reports/campaigns/$/clicks/distribution","GET:/reports/campaigns/$/clicks/email","GET:/reports/campaigns/$/clicks/performance","GET:/reports/campaigns/$/demographics","GET:/reports/campaigns/$/highlights","GET:/reports/campaigns/$/linkSummary","GET:/reports/campaigns/$/opens","GET:/reports/campaigns/$/opens/subjectLine","GET:/reports/campaigns/$/opensAndClicksByDomain","GET:/reports/campaigns/$/opensByCountry","GET:/reports/campaigns/$/opensByLocation","GET:/reports/campaigns/$/opensClicksPerformance","GET:/reports/campaigns/$/sentDelivered","GET:/reports/campaigns/$/sentDelivered/domain","GET:/reports/campaigns/$/social/bitly","GET:/reports/campaigns/$/social/facebook","GET:/reports/campaigns/$/social/repliesAndForwards","GET:/reports/campaigns/$/social/twitter","GET:/reports/campaigns/$/subscriberActivity/clicks","GET:/reports/campaigns/$/subscriberActivity/opens","GET:/reports/campaigns/$/subscriberActivity/sentDelivered","GET:/reports/$/export","GET:/reports/timeline","POST:/searches","PATCH:/searches/$","PUT:/searches/$","DELETE:/searches/$","PATCH:/profiles/$","GET:/profiles/$/uploads","GET:/profiles/$/uploads/$","DELETE:/profiles/$/uploads/$","POST:/profiles/$/uploads/$","POST:/profiles/$/uploads","POST:/emails/$/litmus","GET:/emails/$/litmus","GET:/emails/$/litmus/$","GET:/litmus/status","allowDynamicReply","allowITS","GET:/profiles/$/automations","GET:/dateAutomations/$","GET:/reports/dateAutomations","GET:/reports/dateAutomations/$","GET:/reports/dateAutomations/$/timeline","GET:/signupAutomations/$","GET:/reports/signupAutomations","GET:/reports/signupAutomations/$","GET:/reports/signupAutomations/$/timeline","POST:/dateAutomations","POST:/signupAutomations","PUT:/signupAutomations/$","PUT:/dateAutomations/$","PATCH:/signupAutomations/$","PATCH:/dateAutomations/$","DELETE:/signupAutomations/$","DELETE:/dateAutomations/$","showPurePromotions","showPureTargeting","connectTm","GET:/profiles/$/authorizationCode","editPureTargetingApiKey"]},{"type":"group","id":"11622","permissions":[]}]}'''
 
